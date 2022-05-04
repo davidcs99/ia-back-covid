@@ -59,7 +59,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		.authorizedGrantTypes("password", "refresh_token")
 		//.accessTokenValiditySeconds(60) 60*60*24*365
 		//.refreshTokenValiditySeconds(60)
-		.accessTokenValiditySeconds(60*60*64*365)
+		.accessTokenValiditySeconds(60*60)
 		.refreshTokenValiditySeconds(3600)
 		;
 	}

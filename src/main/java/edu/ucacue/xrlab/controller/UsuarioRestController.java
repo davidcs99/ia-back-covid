@@ -1,5 +1,6 @@
 package edu.ucacue.xrlab.controller;
 
+
 import java.util.ArrayList;
 
 import java.util.HashMap;
@@ -26,10 +27,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ucacue.xrlab.infraestructura.repositorio.login.RoleRepositorio;
+import edu.ucacue.xrlab.infraestructura.repositorio.login.UserRepository;
 import edu.ucacue.xrlab.infraestructura.services.login.IUsuarioService;
 
 import edu.ucacue.xrlab.modelo.Login.Role;
@@ -81,7 +84,7 @@ public class UsuarioRestController {
 		try {
 			String passwordBcrypt = passwordEncoder.encode(usuario.getPassword());
 
-			usuario.setEstado(false);
+			usuario.setEstado(true);
 			usuario.setEstadoTokenRegistro(false);
 			usuario.setRevocarToken(false);
 			usuario.setPassword(passwordBcrypt);
@@ -105,8 +108,15 @@ public class UsuarioRestController {
 
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
-
-	//@Secured({ "ROLE_ADMIN", "ROLE_USER" })
+	@Autowired
+	UserRepository userRepository;
+	
+	@Secured({ "ROLE_ADMIN", "ROLE_USER" })
+	@GetMapping("/userss")
+	public List<Usuario> buscarUsuarios() {
+		return userRepository.findAll();
+	}
+	@Secured({ "ROLE_ADMIN", "ROLE_USER" })
 	@GetMapping("/usuario/{email}")
 	public Usuario showFacturas(@PathVariable String email) {
 
@@ -123,7 +133,7 @@ public class UsuarioRestController {
 		return usuario;
 	}
 
-	@Secured({ "ROLE_ADMIN", "ROLE_USER", "ROLE_PUBLICATOR" })
+	@Secured({ "ROLE_ADMIN", "ROLE_USER" })
 	@PutMapping("/usuario/{email}")
 	public ResponseEntity<?> update(@RequestBody Usuario usuario, BindingResult result, @PathVariable String email) {
 
@@ -284,7 +294,7 @@ public class UsuarioRestController {
 	}
 
 	/// Este metodo es para cambiar passwor del usuario
-	@Secured({ "ROLE_ADMIN", "ROLE_USER", "ROLE_PUBLICATOR" })
+	@Secured({ "ROLE_ADMIN", "ROLE_USER" })
 	@PutMapping("/usuario/{email}/{passwordNuevo}")
 	public ResponseEntity<?> updatePassword(@RequestBody String passwordAnterior, BindingResult result,
 			@PathVariable String email, @PathVariable String passwordNuevo) {
@@ -332,10 +342,10 @@ public class UsuarioRestController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.ACCEPTED);
 	}
 
-	@Secured({ "ROLE_ADMIN" })
+	//@Secured({ "ROLE_ADMIN" })
 	@GetMapping("/usuarios/{terminoBusqueda}")
 	@ResponseStatus(HttpStatus.OK)
-	public List<Usuario> filtrarProductos(@PathVariable String terminoBusqueda) {
+	public List<Usuario> filtrarUsuarios(@PathVariable String terminoBusqueda) {
 		return usuarioService.findByNombreAndApellido(terminoBusqueda);
 	}
 
@@ -358,4 +368,7 @@ public class UsuarioRestController {
 	    }
 	    return sb.toString();
 	}
+	
+	
+	
 }
